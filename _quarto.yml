@@ -1,0 +1,25 @@
+project:
+  output-dir: "docs"
+
+execute: 
+  echo: true
+  cache: true
+
+format:
+  revealjs:
+    theme: [dark, custom.scss]
+    logo: img/logos/logo-julia.svg
+    navigation-mode: vertical
+    footer: <https://aprendeconalf.es/presentacion-calculo-numerico-simbolico-julia>
+    code-line-numbers: false
+    code-tools:
+      code-block-bg: true
+      code-block-border-Izquierda: "#31BAE9"
+    highlight-style: monokai
+    callout-appearance: simple
+    #incremental: true
+    toc: true
+    toc-depth: 1
+    chalkboard: true
+    menu: true
+    slide-number: c/t

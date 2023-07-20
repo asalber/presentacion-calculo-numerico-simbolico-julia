@@ -1,0 +1,1183 @@
+---
+title: "Cálculo numérico y simbólico con Julia"
+subtitle: "Una experiencia docente"
+author: "Alfredo Sánchez Alberca &nbsp; [{{< fa envelope >}}](mailto:asalber@ceu.es) [{{< fa brands twitter >}}](https://twitter.com/aprendeconalf) [{{< fa home >}}](https://aprendeconalf.es)"
+date: 07-21-2023
+date-format: long
+title-slide-attributes:
+    #data-background-color: black
+    data-background-image: img/prompt-julia.png
+    data-background-size: contain
+lang: es
+---
+
+# ¿Qué es Julia?
+
+[Julia](https://julialang.org/) un lenguaje de programación moderno creado en 2012 el MIT por el equipo del profesor Edelman, orientado a cálculo científico y el análisis de datos.
+
+De los creadores de Julia:
+
+>_We want a language that is:_
+>
+- _Open source._
+- _With the speed of C._
+- _Obvious, familiar mathematical notation like Matlab._
+- _As usable for general programming as Python._
+- _As easy for statistics as R._
+- _As natural for string processing as Perl._
+- _As powerful for linear algebra as Matlab._
+- _As good at gluing programs together as the shell._
+- _Dirt simple to learn, yet keeps the most serious hackers happy._
+
+# Experiencia docente
+
+Prácticas en el Grado de Ingeniería Matemática
+
+:::: {.columns}
+
+::: {.column width="32%"}
+Curso 2022/2023
+
+- Álgebra Lineal
+- Análisis I y II
+- Matemática Discreta
+:::
+
+::: {.column width="32%"}
+Curso 2023/2024
+
+- Análisis III
+- Ecuaciones Diferenciales
+- Ecuaciones en Derivadas Parciales
+- Geometría Diferencial
+- Métodos numéricos I y II
+
+:::
+
+::: {.column width="32%"}
+Curso 2024/2025
+
+- Aprendizaje automático
+- Redes neuronales
+- Series temporales
+- Procesamiento del lenguaje natural
+:::
+::::
+
+# ¿Por qué Julia?
+
+## Sencillez
+
+Lenguaje de alto nivel con una sintaxis fácil de aprender (similar a Python, R o Matlab).
+
+```{julia}
+println("¡Hola Julia!")
+```
+
+```{julia}
+x = [1, 2, 3, 4, 5]
+n = length(x)  
+media = sum(x) / n
+varianza = sum(x.^2) / n - media^2
+(media, varianza)
+```
+
+## Rapidez 
+
+Julia es un lenguaje muy veloz (equiparable a C o Fortran en muchas tareas).
+
+![Comparativa de Julia con otros lenguajes](img/benchmarks.svg)
+
+---
+
+### Cálculo de pi por el método de Leibniz
+
+:::: {.columns}
+
+::: {.column width="32%"}
+Julia
+```julia
+function pi(n)
+  pi = 0.0;
+  op = 1
+  for i in 0:n
+      pi += op*4/(2i+1)
+      op *= -1
+  end
+  return pi  
+end
+
+pi(10^9)
+```
+$\approx$ 1 seg
+:::
+
+::: {.column width="32%"}
+C
+
+```c
+double pi(double n) {
+  double pi = 0;
+  int i = 0;
+  int op = 1;
+  for (i; i < n; i++) {
+    pi += op*4/(2*i+1);
+    op *= -1;
+  }
+  return pi;
+}
+
+int main() {
+  pi(1000000000);
+}
+```
+$\approx$ 3 seg
+:::
+
+::: {.column width="35%"}
+Python
+```python
+def pi(n): 
+    pi = 0;
+    op = 1
+    for i in range(n):
+        pi += op*4/(2*i+1)
+        op *= -1
+    return pi 
+
+pi(10^9)
+```
+$\approx$ 78 seg
+:::
+::::
+
+---
+
+### Despacho múltiple
+
+La razón por la que Julia es tan rápido es por que usa [_despacho múltiple_](https://en.wikipedia.org/wiki/Multiple_dispatch) para precompilar distintas versiones de una misma función para cada posible tipo de dato de sus argumentos.
+
+
+## Tipos de datos numéricos
+
+![](img/tipos-datos-numericos.png)
+
+---
+
+:::: {.columns}
+
+::: {.column width="45%"}
+
+```{julia}
+typeof(1)
+```
+
+```{julia}
+typeof(Int16(1))
+```
+
+```{julia}
+typeof(1.0)
+```
+
+```{julia}
+typeof(1.0f0)
+```
+
+:::
+
+::: {.column width="45%"}
+
+```{julia}
+typeof(1//2)
+```
+
+```{julia}
+typeof(pi)
+```
+
+```{julia}
+typeof(1+1im)
+```
+:::
+::::
+
+---
+
+### Enteros
+
+| Tipo | Signo | Bits | Min | Max |
+|:-|:-:|-:|-:|-:|
+| Int8 | ✓ | 8 | $-2^7$ | $2^7-1$ |
+| UInt8 |  | 8 | $0$ | $2^8-1$ |
+| Int16 | ✓ | 16 | $-2^{15}$ | $2^{15}-1$ |
+| UInt16 |  | 16 | $0$ | $2^{16}-1$ |
+| Int32 | ✓ | 32 | $-2^{31}$ | $2^{31}-1$ |
+| UInt32 |  | 32 | $0$ | $2^{32}-1$ |
+| Int64 | ✓ | 64 | $-2^{63}$ | $2^{63}-1$ |
+| UInt64 |  | 64 | $0$ | $2^{64}-1$ |
+| Int128 | ✓ | 128 | $-2^{127}$ | $2^{127}-1$ |
+| UInt128 |  | 128 | $0$ | $2^{128}-1$ |
+| Bool | N/A | 8 | false (0) | true (1) |
+
+---
+
+### Reales en coma flotante
+
+| Tipo | Bits | Min | Max |
+|:-|-:|-:|-:|-:|-:|
+| Float16 | 16 | $-6.55e4$ | $6.55e4$ |
+| Float32 | 32 | $-3.4028235e38$ | $3.4028235e38$ |
+| Float64 | 64 | $-1.7976931348623157e308$ | $1.7976931348623157e308$ |
+
+| Tipo | Min positive | Epsilon |
+|:-|-:|-:|
+| Float16 | $6.104e-5$ | $0.000977$ |
+| Float32 | $1.1754944f-38$ | $1.1920929f-7$ |
+| Float64 | $2.2250738585072014e-308$ | $2.220446049250313e-16$ |
+
+---
+
+## Precisión arbitraria
+
+- `BigInt` permite representar enteros de cualquier tamaño.
+- `BigFloat` permite representar reales de cualquier tamaño y precisión.
+
+El límite lo marca la memoria del ordenador.
+
+```{julia}
+BigFloat(pi)
+```
+
+```{julia}
+BigFloat(pi, precision = 1000)
+```
+
+---
+
+### Definición de nuevos tipos
+
+```{julia}
+struct EvenInt <: Integer
+    num :: Signed
+
+    # inner constructor
+    function EvenInt(num)
+        @assert iseven(num)
+        new(num)
+    end
+end
+
+EvenInt(4)
+```
+
+---
+
+### Aritmética racional
+
+:::: {.columns}
+
+::: {.column width="45%"}
+- Simplifiación
+
+  ```{julia}
+  4 // 6
+  ```
+
+  ```{julia}
+  4 // 6 == 2 // 3
+  ```
+
+- Suma y resta
+
+  ```{julia}
+  1 // 6 + 2 // 4
+  ```
+
+  ```{julia}
+  2 // 3 - 1 // 6
+  ```
+
+:::
+
+::: {.column width="45%"}
+- Producto 
+
+  ```{julia}
+  2 // 3 * 3 // 4
+  ```
+
+- Cociente
+
+  ```{julia}
+  3 // 4 / 2 // 3
+  ```
+:::
+::::
+
+---
+
+### Aritmética compleja
+
+La constante `im` está asociada al número complejo $i=\sqrt{-1}$. 
+
+:::: {.columns}
+::: {.column width="45%"}
+
+- Suma y resta
+
+  ```{julia}
+  (1 + 2im) + (1 - im)
+  ```
+
+  ```{julia}
+  (1 + 2im) - (1 + im)
+  ```
+
+:::
+
+::: {.column width="45%"}
+- Producto 
+
+  ```{julia}
+  (1 + 2im) * (2 - 3im)
+  ```
+
+- Cociente
+
+  ```{julia}
+  (1 + 2im) / (1 - 2im)
+  ```
+:::
+:::: 
+
+---
+
+### Promoción de tipos
+
+Siempre se promociona hacia el tipo más general.
+
+::: {.column width="45%"}
+
+```{julia}
+typeof(Int16(1) + 2)
+```
+
+```{julia}
+typeof(1.0 + 2)
+```
+
+```{julia}
+typeof(1 / 2)
+```
+
+```{julia}
+typeof(1 // 2 + 0.5)
+```
+
+```{julia}
+typeof(sqrt(1 // 2))
+```
+:::
+
+::: {.column width="45%"}
+```{julia}
+typeof((1 // 2) ^ 2.0)
+```
+
+```{julia}
+typeof(1.0 + 2)
+```
+
+```{julia}
+typeof(2(1+0im))
+```
+
+```{julia}
+typeof(im^2)
+```
+
+:::: 
+
+---
+
+## Tipos de datos compuestos
+
+::::{.columns}
+:::{.column width="55%"}
+- Vectores
+
+  ```{julia}
+  typeof([1, 2, 3])
+  ```
+
+- Matrices
+
+  ```{julia}
+  typeof([1 2 3; 4 5 6])
+  ```
+
+- Tuplas
+
+  ```{julia}
+  typeof((1, "enero", 2020))
+  ```
+
+:::
+:::{.column width="41%"}
+- Diccionarios
+
+  ```{julia}
+  typeof(Dict("x" => 1, "y" => 2))
+  ```
+
+- Conjuntos
+
+  ```{julia}
+  typeof(Set([2, 4, 6]))
+  ```
+:::
+::::
+Los tipos compuestos incluyen parámetros que determinan el tipo de sus elementos.
+
+---
+
+### Álgebra de conjuntos
+
+::::{.columns}
+:::{.column width="48%"}
+```{julia}
+A = Set([2, 4])
+B = Set([1, 2, 3])
+3 ∈ A 
+```
+
+```{julia}
+A ⊆ B
+```
+
+:::
+:::{.column width="48%"}
+
+```{julia}
+A ∪ B
+```
+
+```{julia}
+A ∩ B
+```
+:::
+::::
+
+Es fácil definir nuevos operadores.
+
+```{julia}
+const \ˢ = setdiff
+A \ˢ B
+```
+
+---
+
+### Aritmética infinita e indeterminaciones
+
+:::: {.columns}
+
+::: {.column width="45%"}
+
+```{julia}
+1 / Inf
+```
+
+```{julia}
+1 / 0
+```
+
+```{julia}
+0 / 0
+```
+
+```{julia}
+Inf + 1
+```
+
+```{julia}
+1 - Inf
+```
+:::
+
+::: {.column width="45%"}
+```{julia}
+Inf + Inf
+```
+
+```{julia}
+Inf - Inf
+```
+
+```{julia}
+Inf / Inf
+```
+
+```{julia}
+0 / 0
+```
+
+```{julia}
+0 * Inf
+```
+:::
+
+::::
+
+## Definición de funciones
+
+Julia admite múltiples formas de definir funciones.
+
+- Tradicional. Similar a otros lenguajes de programación.
+
+  ```julia
+  function area_triángulo(base, altura)
+    base * altura / 2
+  end
+  ```
+
+- En línea. Muy cómoda para definir funciones matemáticas.
+
+  ```julia
+  area_triángulo(base, altura) = base * altura / 2
+  ```
+- Funciones anónimas. Se utilizan sobre todo en programación funcional, como argumentos de otras funciones.
+
+  ```julia
+  area_triángulo = (base, altura) -> base * altura / 2 
+  ```
+
+## Programación funcional
+
+Las funciones son objetos que pueden asignarse o pasarse como argumentos de otras funciones.
+
+```{julia}
+square(x) = x * x
+cuadrado = square
+cuadrado(2)
+```
+
+```{julia}
+componer(f, g) = f ∘ g
+componer(log, sin)(pi/2)
+```
+---
+
+### Vectorización de funciones y operadores
+
+El operador punto `.` permite aplicar una función u operador a los elementos de una colección (arrays, vectores, tuplas, etc.)
+
+```{julia}
+v = [1, 2, 3]
+cuadrado.(v)
+```
+
+```{julia}
+w = [0, 1, 2]
+v .^ w
+```
+
+## Expresividad matemática
+
+### Acepta Unicode 
+
+Julia permite caracteres [Unicode](https://en.wikipedia.org/wiki/List_of_Unicode_characters) lo que facilita la expresión de fórmulas matemáticas.
+
+Para ello se utilizan [códigos especiales](https://docs.julialang.org/en/v1/manual/unicode-input/) (en muchos casos son los mismos que en $\LaTeX$), pulsando después la tecla de tabulación.
+
+```{julia}
+# Introducir \alpha + TAB
+α = 1
+```
+
+```{julia}
+😄 = "julia"
+😄 ^ 2
+```
+
+---
+
+### Composición de funciones
+
+El operador `∘` permite componer funciones.
+
+```{julia}
+f(x) = sin(x)
+g(x) = log(x)
+(g ∘ f)(pi/2)
+```
+
+También puede realizarse con el operador de tubería `|>` (similar a  %>% en R).
+
+```{julia}
+pi / 2 |> sin |> log
+```
+
+---
+
+###  Integración con $\LaTeX$
+
+El paquete `Latexify` permite obtener el código $\LaTeX$ para representar cualquier expresión matemática.
+
+```{julia}
+using Latexify
+expr = :((x-y)/(x+y)^2)
+latexify(expr)
+```
+
+## Integración con Quarto
+
+[Quarto](https://quarto.org/) es un sistema de publicación de textos científicos y técnicos de alta calidad basado en Markdown y $\LaTeX$ (similar a RMarkdown).
+
+Julia es uno de los lenguajes de programación que admite.
+
+## Orientación al cálculo numérico
+
+Lenguaje de propósito general, pero especialmente diseñado para el cálculo científico y el análisis de datos.
+
+# Aplicaciones Matemáticas
+
+## Representación gráfica de funciones
+
+El paquete `Plots` permite la representación gráfica de funciones con diversos tipos de diagramas.
+
+::::{.columns}
+::: {.column width="48%"}
+```{julia}
+using Plots
+plot(sin, 0, 2pi, label = "sen", size = (480,400))
+plot!(cos, label = "cos")
+```
+:::
+
+::: {.column width="48%"}
+```{julia}
+xs = ys = range(-3,3, length=100)
+f(x,y) = 2sin(x^2+y^2) / (x^2+y^2)
+surface(xs, ys, f, size = (480, 400))
+```
+:::
+::::
+
+---
+
+```{julia}
+plotlyjs()
+xs = ys = range(-3,3, length=100)
+f(x,y) = 2sin(x^2+y^2) / sqrt(x^2+y^2)
+surface(xs, ys, f)
+```
+
+
+## Cálculo simbólico
+
+Existen dos paquetes para cálculo simbólico:
+
+- `SymPy`: Basado en el paquete `sympy` de Phthon. Muy maduro, pero lento.
+- `Symbolics`. Paquete puro en Julia muy rápido, pero no tan completo.
+
+---
+
+### Declaración de variables (símbolos)
+
+::::{.columns}
+:::{.column width="48%"}
+SymPy
+```{julia}
+using SymPy
+@syms x::real y::real
+typeof(x)
+```
+:::
+
+:::{.column width="48%"}
+Symbolics
+```{julia}
+using Symbolics
+@variables x y;
+typeof(x)
+```
+:::
+::::
+
+---
+
+### Simplificación
+
+::::{.columns}
+:::{.column width="48%"}
+SymPy
+```{julia}
+using SymPy
+@syms x::real
+SymPy.simplify(sin(x)^2 + cos(x)^2)
+```
+
+```{julia}
+using SymPy
+@syms x::real
+SymPy.expand((x + 1)^2)
+```
+
+```{julia}
+SymPy.factor(x^3 - x^2 + x - 1)
+```
+:::
+
+:::{.column width="48%"}
+Symbolics
+```{julia}
+using Symbolics
+@variables x;
+Symbolics.simplify(sin(x)^2 + cos(x)^2)
+```
+:::
+::::
+
+---
+
+### Sustitución de variables 
+
+::::{.columns}
+:::{.column width="48%"}
+SymPy
+```{julia}
+using SymPy
+@syms x y
+expr = cos(x*y)
+expr.subs([(x, 2), (y, π)])
+```
+
+```{julia}
+expr(x=>2, y=>π)
+```
+:::
+
+:::{.column width="48%"}
+Symbolics
+```{julia}
+using Symbolics
+@variables x y
+expr = cos(x*y)
+substitute(expr, Dict([x=>2, y=>π]))
+```
+:::
+::::
+
+---
+
+### Resolución de ecuaciones
+
+::::{.columns}
+:::{.column width="48%"}
+SymPy
+```{julia}
+using SymPy
+@syms x y
+solveset(Eq(x^2, x))
+```
+
+```{julia}
+solveset(x^2 - x)
+```
+
+<!-- ```{julia}
+const S = sympy.S
+solveset(Eq(x, x), domain=S.Reals)
+``` -->
+
+```{julia}
+solveset(sin(x) - 1)
+```
+
+```{julia}
+solveset(x^2 - y, x)
+```
+
+```{julia}
+linsolve((x+y-3, x-y-1), (x,y))
+```
+:::
+
+:::{.column width="48%"}
+Symbolics  
+Para sistemas lineales
+```{julia}
+using Symbolics
+@variables x y
+Symbolics.solve_for([x + y ~ 3, x - y ~ 1], [x, y])
+```
+:::
+::::
+
+---
+
+### Límites
+
+::::{.columns}
+:::{.column width="48%"}
+SymPy
+```{julia}
+using SymPy
+@syms x
+limit(sin(x) / x, x, 0)
+```
+
+```{julia}
+limit(sin(x) / x, x=>0)
+```
+
+```{julia}
+limit(1 / x, x, 0, "-")
+```
+
+```{julia}
+limit(1 / x, x, 0, "+")
+```
+:::
+
+:::{.column width="48%"}
+Symbolics  
+No implementado aún.
+:::
+::::
+
+---
+
+### Derivadas
+
+::::{.columns}
+:::{.column width="48%"}
+SymPy
+```{julia}
+using SymPy
+@syms x y
+diff(sin(x))
+```
+
+```{julia}
+diff(sin(x), x, 2)
+```
+
+```{julia}
+SymPy.diff(ℯ^(x*y), x)
+```
+
+```{julia}
+diff(ℯ^(x*y), x, y)
+```
+:::
+
+:::{.column width="48%"}
+Symbolics  
+
+```{julia}
+using Symbolics
+@variables x y
+Symbolics.derivative(sin(x), x)
+```
+
+```{julia}
+Dx = Symbolics.Differential(x)
+expand_derivatives(Dx(sin(x)))
+```
+
+```{julia}
+Dy = Symbolics.Differential(y)
+expand_derivatives(Dy(Dx(ℯ^(x*y))))
+```
+:::
+::::
+
+Es posible usar también la notación _prima_ `f'` sobrecargando el operador `adjoin`.
+
+---
+
+### Gradiente, Hessiana y Jacobiana
+
+::::{.columns}
+:::{.column width="48%"}
+SymPy
+
+```{julia}
+using SymPy
+@syms x y
+diff.(ℯ^(x*y), (x, y))
+```
+
+```{julia}
+hessian(ℯ^(x*y), (x,y))
+```
+
+```{julia}
+v = [diff.(f, [x, y]) for f in [x^2*y, x*y^2]]
+hcat(v...)
+```
+:::
+
+:::{.column width="48%"}
+Symbolics  
+
+```{julia}
+using Symbolics
+@variables x y
+Symbolics.gradient(ℯ^(x*y), [x, y])
+```
+
+```{julia}
+Symbolics.hessian(ℯ^(x*y), [x, y])
+```
+
+```{julia}
+Symbolics.jacobian([ℯ^(x*y), x*y], [x, y])
+```
+:::
+::::
+
+---
+
+### Integrales
+
+::::{.columns}
+:::{.column width="48%"}
+SymPy
+
+```{julia}
+using SymPy
+@syms x y
+integrate(cos(x))
+```
+
+```{julia}
+integrate(cos(x), (x, 0, π/2))
+```
+
+```{julia}
+integrate(x^2 - y, (x, -1, 1), (y, -1, 1))
+```
+:::
+
+:::{.column width="48%"}
+Symbolics  
+
+```{julia}
+using Symbolics
+using SymbolicNumericIntegration
+@variables x y
+SymbolicNumericIntegration.integrate(cos(x))
+```
+
+```{julia}
+SymbolicNumericIntegration.integrate(x^2 / (16 + x^2))
+```
+:::
+::::
+
+---
+
+### Ecuaciones diferenciales
+
+```{julia}
+using SymPy
+@syms x k
+y = SymFunction("y")
+dsolve(diff(y(x),x) ~  k*y(x))
+```
+
+```{julia}
+dsolve(diff(y(x),x) ~  k*y(x), ics = Dict(y(0) => 1))
+```
+
+## Cálculo numérico
+
+### Polinomios
+
+```{julia}
+using Polynomials
+p = Polynomial([4,0,2,1])
+p(2)
+```
+
+```{julia}
+Polynomials.roots(p)
+```
+
+```{julia}
+fit([1,2,3], [1, 0, 1])
+```
+
+---
+
+### Interpolación
+
+```{julia}
+using Interpolations
+xs = 1:1:10
+itp = Interpolations.interpolate(log.(xs), BSpline(Linear()))
+```
+
+```{julia}
+itp2 = Interpolations.interpolate(log.(xs), BSpline(Quadratic()))
+```
+
+---
+
+### Álgebra Lineal
+
+```{julia}
+A = [1 2 3; 0 1 0; 1 0 1]
+B = [10, 2, 4]
+A \ B
+```
+
+```{julia}
+using LinearAlgebra
+eigvals(A)
+```
+
+```{julia}
+factorize(A)
+```
+
+---
+
+### Resolución de ecuaciones
+
+```{julia}
+using Roots
+f(x) = sin(x)
+find_zeros(f, -5, 5)
+```
+
+```{julia}
+using LinearSolve
+A = [1.0 2 3; 0 1 0; 1 0 1]
+B = [10.0, 2, 4]
+solve(LinearProblem(A, B))
+```
+
+```{julia}
+using NLsolve
+f(x, y) = [(x+3)*(y^3-7)+18, sin(y*exp(x)-1)]
+f(x) = [(x[1]+3)*(x[2]^3-7)+18, sin(x[2]*exp(x[1])-1)]
+nlsolve(f, [ 0.1, 1.2])
+```
+
+---
+
+### Derivación numérica
+
+```{julia}
+using ForwardDiff
+f(x) = exp(-x^2)
+ForwardDiff.derivative(f, 1)
+```
+
+---
+
+### Integración numérica
+
+```{julia}
+using QuadGK
+f(x) = x^x
+quadgk(f, 0, 1)
+```
+
+```{julia}
+quadgk(f, big(0), big(1), rtol = 1e-30)
+```
+
+```{julia}
+quadgk(x -> ℯ^(-x^2), -Inf, Inf)
+```
+
+---
+
+### Ecuaciones diferenciales
+
+
+
+# Inconvenientes
+
+## Demora en la primera ejecución
+
+Al precompilar cualquier función la primera ejecución se demora un poco. Esta demora puede ser significativa en paquetes que incorporan muchas funciones (por ejemplo Plots).
+
+Se puede evitar con el paquete [`JuliaInterpreter`](https://juliadebug.github.io/JuliaInterpreter.jl/stable/).
+
+## Control del desbordamiento
+
+Cuando se excede el mayor valor que puede representarse con un tipo, no se produce un error de desbordamiento, sino que se aplica aritmética modular y se continúa contando a partir del mínimo. 
+
+```{julia}
+10^19
+```
+
+```{julia}
+BigInt(10)^19
+```
+
+## Mezcla de sintaxis de otros lenguajes
+
+- Las comillas simples se usan para representar caracteres y las dobles para cadenas.
+- El operador de exponenciación es `^` (y no `**` como en Python).
+- Los operadores lógicos `&` (conjunción), `|` (disyunción) y `!` (negación), (y no `and`, `or` y `not` como en Python).
+- Operador de concatenación de cadenas `*` (y no `+` como en Python).
+- El indexado de arrays comienza en 1 (y no en 0 como en Python).
+- Los rangos para la indexación tienen sintaxis `inicio:salto:fin` (y no `inicio:(fin+1):salto` como en Python).
+- El operador de resto de la división entera es `%` (y no el módulo como en Python).
+- La unidad imaginaria $\sqrt{-1}$ se representa `im` (y no `j` como en Python).
+
+# Paquetes para Matemáticas
+
+## Cálculo simbólico
+
+- [SymPy](https://docs.juliahub.com/SymPy/KzewI/1.0.31/):  Sistema de Álgebra Computacional (CAS) basadado en la librería `SymPy` de Python.
+- [Symbolics](https://juliasymbolics.org/): Sistema de Álgebra Computacional (CAS) basado en Julia.
+
+## Algebra
+
+- [LinearAlgebra](https://docs.julialang.org/en/v1/stdlib/LinearAlgebra/): Álgebra lineal.
+- [Polynomials](https://juliamath.github.io/Polynomials.jl/stable/): Polinomios en una variable.
+- [LinearSolve](https://docs.sciml.ai/LinearSolve/stable/tutorials/linear/): Resolución de sistemas de ecuaciones lineales.
+- [NonlinearSolve](https://docs.sciml.ai/NonlinearSolve/stable/): Resolución de ecuaciones no lineales.
+- [AbstractAlgebra](https://nemocas.github.io/AbstractAlgebra.jl/dev/): Estructuras algebraicas.
+
+## Aprendizaje automático
+
+- [SciML](https://sciml.ai/): Open Source Software for Scientific Machine Learning. Conjunto de paquetes para la simulación y el aprendizaje automático.
+  - [DifferentialEquations](https://docs.sciml.ai/DiffEqDocs/stable/): Resolución de ecuaciones diferenciales.
+  - [ModelingToolkit](https://docs.sciml.ai/ModelingToolkit/stable/): Modelado basado en ecuaciones. 
+  - [Optimization](https://docs.sciml.ai/Optimization/stable/): Optimización
+  - [NonlinearSolve](https://docs.sciml.ai/NonlinearSolve/stable/): Resolución de ecuaciones no lineales.
+- [MLJ.jl](https://github.com/alan-turing-institute/MLJ.jl). Funciones para los principales algoritmos de aprendizaje automático.
+- [MLBase](https://mlbasejl.readthedocs.io/en/latest/): Preprocesamiento y evaluación de modelos.
+- [Flux](https://fluxml.ai/Flux.jl/stable/): Redes neuronales.
+
+## Teoría de grafos
+
+- [JuliaGraphs](https://juliagraphs.org/). Análisis de grafos.
+- [Graphs](https://juliapackages.com/p/graphs). Creación y análsisis de grafos.
+- [GraphPlot](https://juliapackages.com/p/graphplot). Dibujo de grafos.
+
+## Estadística
+
+- [DataFrames](https://dataframes.juliadata.org/stable/). Manipulación de conjuntos de datos en formato tabular.
+- [Statistics](https://docs.julialang.org/en/v1/stdlib/Statistics/): Funciones estadísticas básicas (Estadística Descriptiva).
+- [Distributions](https://juliastats.org/Distributions.jl/stable/): Modelos de distribución de probabilidad.
+- [HypothesisTests](https://juliastats.org/HypothesisTests.jl/stable/): Contrastes de hipótesis.
+- [MultivariateStats](https://juliastats.org/MultivariateStats.jl/dev/): Estadística multivariante (regresión, análisis discriminante lineal, análisis de componentes principales, análsisis de correlación canónica, análisis factorial, escalado multidimensional, etc.)
+- [Clustering](https://juliastats.org/Clustering.jl/stable/). Análisis de conglomerados. Clasificación no supervisada.
+- [GLM](https://juliastats.org/GLM.jl/stable/): Modelos lineales generalizados.
+- [TimeSeries](https://juliastats.org/TimeSeries.jl/dev/): Series temporales.
+
+## Simulación
+
+- [ModelingToolkit](https://docs.sciml.ai/ModelingToolkit/stable/): Modelado basado en ecuaciones. 
+- [FunctionalModels](https://tshort.github.io/FunctionalModels.jl/stable/): Modelado de sistemas físicos (similar a [Modelica](https://modelica.org/modelicalanguage.html)).
+- [Simulate](https://github.com/non-Jedi/Simulate.jl): Simulación de sucesos discretos.
