@@ -157,7 +157,6 @@ $\approx$ 78 seg
 
 La razón por la que Julia es tan rápido es por que usa [_despacho múltiple_](https://en.wikipedia.org/wiki/Multiple_dispatch) para precompilar distintas versiones de una misma función para cada posible tipo de dato de sus argumentos.
 
-
 ## Tipos de datos numéricos
 
 ![](img/tipos-datos-numericos.png)
@@ -669,7 +668,7 @@ surface(xs, ys, f, size = (480, 400))
 ```{julia}
 plotlyjs()
 xs = ys = range(-3,3, length=100)
-f(x,y) = 2sin(x^2+y^2) / sqrt(x^2+y^2)
+f(x,y) = 2sin(x^2+y^2) / (x^2+y^2)
 surface(xs, ys, f)
 ```
 
@@ -1014,16 +1013,21 @@ fit([1,2,3], [1, 0, 1])
 ---
 
 ### Interpolación
-
+::::{.columns}
+:::{.column width="48%"}
 ```{julia}
 using Interpolations
-xs = 1:1:10
+xs = 1:10
 itp = Interpolations.interpolate(log.(xs), BSpline(Linear()))
 ```
-
+:::
+:::{.column width="48%"}
 ```{julia}
-itp2 = Interpolations.interpolate(log.(xs), BSpline(Quadratic()))
+xs = 1:0.5:10
+itp2 = Interpolations.interpolate(log.(xs), BSpline(Quadratic(Line(OnGrid()))))
 ```
+:::
+::::
 
 ---
 
@@ -1100,7 +1104,18 @@ quadgk(x -> ℯ^(-x^2), -Inf, Inf)
 
 ### Ecuaciones diferenciales
 
-
+```{julia}
+using OrdinaryDiffEq
+S0, I0, R0 = 7900000, 10, 0
+N = S0 + I0 + R0
+u0 = [S0, I0, R0]/N
+k = 1/3
+f(u,p,t) = -k * u  # solving  u′(t) = - k u(t)
+time_span = (0.0, 20.0)
+prob = ODEProblem(f, I0/N, time_span)
+sol = solve(prob, Tsit5(), reltol=1e-8, abstol=1e-8)
+plot(sol)
+```
 
 # Inconvenientes
 
@@ -1140,6 +1155,13 @@ BigInt(10)^19
 - [SymPy](https://docs.juliahub.com/SymPy/KzewI/1.0.31/):  Sistema de Álgebra Computacional (CAS) basadado en la librería `SymPy` de Python.
 - [Symbolics](https://juliasymbolics.org/): Sistema de Álgebra Computacional (CAS) basado en Julia.
 
+## Cálculo numérico
+
+- [ForwardDiff](https://juliadiff.org/ForwardDiff.jl/stable/): Cálculo de derivadas mediante diferenciación automática.
+- [QuadGK](https://juliamath.github.io/QuadGK.jl/stable/): Cálculo de integrales en una variable mediante la cuadratura de Gauss-Kronrod.
+- [Interpolations](https://juliamath.github.io/Interpolations.jl/latest/): Interpolación mediante splines.
+- [DifferentialEquations](https://docs.sciml.ai/DiffEqDocs/stable/): Resolución de ecuaciones diferenciales.
+
 ## Algebra
 
 - [LinearAlgebra](https://docs.julialang.org/en/v1/stdlib/LinearAlgebra/): Álgebra lineal.
@@ -1147,6 +1169,7 @@ BigInt(10)^19
 - [LinearSolve](https://docs.sciml.ai/LinearSolve/stable/tutorials/linear/): Resolución de sistemas de ecuaciones lineales.
 - [NonlinearSolve](https://docs.sciml.ai/NonlinearSolve/stable/): Resolución de ecuaciones no lineales.
 - [AbstractAlgebra](https://nemocas.github.io/AbstractAlgebra.jl/dev/): Estructuras algebraicas.
+
 
 ## Aprendizaje automático
 
