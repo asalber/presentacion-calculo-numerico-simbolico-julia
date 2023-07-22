@@ -1137,6 +1137,36 @@ Cuando se excede el mayor valor que puede representarse con un tipo, no se produ
 BigInt(10)^19
 ```
 
+## Redefinición de variables como constantes y viceversa
+
+Aunque Julia es un lenguaje de tipado dinámico como Python, no permite redefinir una constante como una variable o viceversa. 
+
+Hay que tener en cuenta que las funciones se definen como constantes por lo que no se puede utilizar el mismo nombre para una variable y una función.
+
+```julia
+x = 1
+const x = 2
+```
+```sh
+ERROR: cannot declare x constant; it already has a value
+Stacktrace:
+ [1] top-level scope
+   @ REPL[1]:1
+```
+
+```julia
+f = 1
+f(x) = 2x
+```
+```sh
+ERROR: cannot define function f; it already has a value
+Stacktrace:
+ [1] top-level scope
+   @ none:0
+ [2] top-level scope
+   @ REPL[3]:1
+```
+
 ## Mezcla de sintaxis de otros lenguajes
 
 - Las comillas simples se usan para representar caracteres y las dobles para cadenas.
@@ -1204,3 +1234,6 @@ BigInt(10)^19
 - [ModelingToolkit](https://docs.sciml.ai/ModelingToolkit/stable/): Modelado basado en ecuaciones. 
 - [FunctionalModels](https://tshort.github.io/FunctionalModels.jl/stable/): Modelado de sistemas físicos (similar a [Modelica](https://modelica.org/modelicalanguage.html)).
 - [Simulate](https://github.com/non-Jedi/Simulate.jl): Simulación de sucesos discretos.
+
+<!-- TODO: Bibliografía -->
+
