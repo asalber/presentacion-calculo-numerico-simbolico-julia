@@ -1,6 +1,6 @@
 ---
 title: "Cálculo numérico y simbólico con Julia"
-subtitle: "Una experiencia docente"
+subtitle: "Seminario de Innovación Docente<br>Universidade da Coruña"
 author: "Alfredo Sánchez Alberca &nbsp; [{{< fa envelope >}}](mailto:asalber@ceu.es) [{{< fa brands twitter >}}](https://twitter.com/aprendeconalf) [{{< fa home >}}](https://aprendeconalf.es)"
 date: 07-21-2023
 date-format: long
@@ -9,6 +9,7 @@ title-slide-attributes:
     data-background-image: img/prompt-julia.png
     data-background-size: contain
 lang: es
+fig-align: center
 ---
 
 # ¿Qué es Julia?
@@ -1235,5 +1236,27 @@ Stacktrace:
 - [FunctionalModels](https://tshort.github.io/FunctionalModels.jl/stable/): Modelado de sistemas físicos (similar a [Modelica](https://modelica.org/modelicalanguage.html)).
 - [Simulate](https://github.com/non-Jedi/Simulate.jl): Simulación de sucesos discretos.
 
-<!-- TODO: Bibliografía -->
+# Referencias 
 
+- [Julia Academy](https://juliaacademy.com/)
+- [Calculus with Julia](https://jverzani.github.io/CalculusWithJuliaNotes.jl/)
+- [Introduction to Applied Linear Algebra with Julia](https://web.stanford.edu/~boyd/vmls/)
+- [SciML: Scientific Machine Learning](https://docs.sciml.ai/Overview/stable/)
+- [Foundamentals of Numerical Computation](https://tobydriscoll.net/fnc-julia/nonlineqn/rootproblem.html)
+- [Introduction to Numerical Analysis](https://github.com/mitmath/18330)
+- [Introduction to Numerical Analysis II](https://github.com/ettersi/NumericalAnalysisII)
+- [Computational Mathematics](https://github.com/ettersi/ComputationalMathematics)
+- [Manual de Julia](https://aprendeconalf.es/manual-julia/)
+- [Prácticas de Análisis con Julia](https://aprendeconalf.es/analisis-practicas-julia/)
+
+# ¿Preguntas? {.unnumbered .unlisted}
+
+<center>
+![](img/preguntas.jpg)
+</center>
+
+# Gracias por la atención {.unnumbered .unlisted}
+
+<center>
+![](img/qr.png)
+</center>
