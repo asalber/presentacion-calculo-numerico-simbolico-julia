@@ -158,6 +158,44 @@ $\approx$ 78 seg
 
 La razón por la que Julia es tan rápido es por que usa [_despacho múltiple_](https://en.wikipedia.org/wiki/Multiple_dispatch) para precompilar distintas versiones de una misma función para cada posible tipo de dato de sus argumentos.
 
+---
+
+### Comparativa de la sintaxis de Julia con otros lenguajes
+
+La sintaxis de Julia es similar a la de lenguajes como Python o MATLAB, y en algunos casos es incluso más concisa, por lo que la transición de estos lenguajes a Julia es fácil.
+
+[https://cheatsheets.quantecon.org](https://cheatsheets.quantecon.org)
+
+---
+
+### Algunas razones más para pensárselo
+
+- Evita el problema de la doble reescritura de código (prototipo + versión operativa).
+- Permite la programación paralela y distribuida.
+- Puede ejecutar código realizado en otros lenguajes como C, Fortran, Python, R, Matlab, etc.
+
+::: {.columns}
+::: {.column width="60%"}
+```julia
+using PyCall, RCall 
+@pyimport scipy.interpolate as interpolate
+
+xs = 1:10
+ys = rand(10)
+f = interpolate.interp1d(xs, ys, kind="cubic")
+zs = range(1, 10, 1000)
+
+R"""
+plot($xs, $ys)
+lines($zs, $(f(zs)), col = "red")
+"""
+```
+:::
+::: {.column width="40%"}
+![](img/interpolacion.png)
+:::
+:::
+
 ## Tipos de datos numéricos
 
 ![](img/tipos-datos-numericos.png)
@@ -822,22 +860,19 @@ Symbolics.solve_for([x + y ~ 3, x - y ~ 1], [x, y])
 ::::{.columns}
 :::{.column width="48%"}
 SymPy
+
 ```{julia}
 using SymPy
 @syms x
-limit(sin(x) / x, x, 0)
+SymPy.limit(sin(x) / x, x=>0)
 ```
 
 ```{julia}
-limit(sin(x) / x, x=>0)
+SymPy.limit(1 / x, x=>0, dir = "-")
 ```
 
 ```{julia}
-limit(1 / x, x, 0, "-")
-```
-
-```{julia}
-limit(1 / x, x, 0, "+")
+SymPy.limit(1 / x, x=>0, dir = "+")
 ```
 :::
 
